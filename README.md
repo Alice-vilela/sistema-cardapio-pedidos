@@ -1,4 +1,4 @@
-(```)
+
 # Sistema de Cardápio e Pedidos para Restaurante
 
 ## Sobre o projeto
@@ -19,7 +19,7 @@ Organizar o cadastro de produtos, a consulta do cardápio e o registro de pedido
 - Cálculo do valor total dos pedidos
 - Consulta de pedidos
 
-A atualização de produtos e do status dos pedidos faz parte dos requisitos previstos para o sistema.
+A atualização de produtos e do status dos pedidos faz parte dos requisitos previstos para o sistema, mas não está implementada na versão atual do código.
 
 ## Tecnologias utilizadas
 
@@ -48,16 +48,43 @@ sistema-cardapio-pedidos/
 
 ## Banco de dados
 
-O banco de dados, denominado `restaurante`, possui três tabelas principais:
+O banco de dados foi denominado `restaurante` e possui três tabelas principais.
 
-### produto
-Armazena o identificador, nome, descrição, categoria, preço e disponibilidade dos produtos.
+### Tabela produto
 
-### pedido
-Armazena o identificador, data e hora, status e valor total de cada pedido.
+Responsável por armazenar as informações dos produtos cadastrados no cardápio.
 
-### item_pedido
-Armazena os produtos associados aos pedidos, suas quantidades, preços unitários e subtotais.
+Campos:
+- id_produto
+- nome
+- descricao
+- categoria
+- preco
+- disponibilidade
+
+### Tabela pedido
+
+Responsável por armazenar os dados gerais dos pedidos realizados.
+
+Campos:
+- id_pedido
+- data_hora
+- status
+- valor_total
+
+### Tabela item_pedido
+
+Responsável por armazenar os produtos associados a cada pedido, suas quantidades e valores.
+
+Campos:
+- id_item
+- id_pedido
+- id_produto
+- quantidade
+- preco_unitario
+- subtotal
+
+As tabelas possuem relacionamentos que permitem associar os produtos aos pedidos registrados.
 
 ## Organização do desenvolvimento
 
@@ -69,15 +96,40 @@ O projeto foi organizado em cinco etapas:
 4. Desenvolvimento das funcionalidades
 5. Planejamento e validação dos testes
 
-## Execução
+## Funcionalidades desenvolvidas no código
 
-O código PHP foi estruturado para utilizar um servidor com suporte a PHP e um banco de dados MySQL.
+### Cadastro de produtos
 
-O arquivo `database.sql` contém os comandos necessários para criar o banco e suas tabelas.
+A funcionalidade de cadastro permite informar o nome, a descrição, a categoria, o preço e a disponibilidade de um produto.
 
-O repositório disponibiliza o código-fonte do projeto. A publicação no GitHub, por si só, não executa a aplicação PHP nem comprova os resultados dos testes.
+Os dados são enviados ao arquivo `cadastro_produto.php`, responsável pela validação das informações e pelo comando de inserção na tabela `produto`.
+
+### Registro de pedidos
+
+A funcionalidade de registro de pedidos permite selecionar produtos disponíveis e informar suas quantidades.
+
+O sistema calcula os subtotais e o valor total, preparando o registro nas tabelas `pedido` e `item_pedido`.
+
+O status inicial definido para os pedidos é `Pendente`.
+
+### Consulta de produtos
+
+O arquivo `listar_produtos.php` é responsável pela consulta dos produtos cadastrados no banco de dados.
+
+### Consulta de pedidos
+
+O arquivo `listar_pedidos.php` é responsável pela consulta dos pedidos registrados.
+
+## Execução do projeto
+
+A aplicação foi estruturada em PHP, com conexão a um banco de dados MySQL.
+
+O arquivo `database.sql` contém os comandos necessários para criar o banco de dados e suas tabelas.
+
+Para executar a aplicação, é necessário utilizar um ambiente com suporte a PHP e MySQL, configurar a conexão e acessar o arquivo `index.php` pelo servidor.
+
+O repositório disponibiliza o código-fonte do projeto. A publicação no GitHub não representa, por si só, a execução ou a validação das funcionalidades.
 
 ## Finalidade acadêmica
 
-Projeto desenvolvido para aplicação prática dos conteúdos estudados no curso de Análise e Desenvolvimento de Sistemas.
-(```)
+Este projeto foi elaborado para aplicar conhecimentos adquiridos durante o curso de Análise e Desenvolvimento de Sistemas, envolvendo levantamento de requisitos, modelagem, prototipagem, programação e organização do código-fonte.
