@@ -2,7 +2,7 @@
 
 require_once "conexao.php";
 
-$mensagem = "";
+$mensagem = ""; 
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
