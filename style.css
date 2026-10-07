@@ -1,0 +1,196 @@
+/* Estilo geral do sistema */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f6f8;
+    color: #333;
+    line-height: 1.6;
+}
+
+header {
+    background-color: #263b50;
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0;
+}
+
+header p {
+    margin-bottom: 0;
+}
+
+main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 25px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+body > h1,
+body > h2,
+body > p,
+body > form,
+body > table {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1, h2 {
+    color: #263b50;
+}
+
+header h1 {
+    color: white;
+}
+
+/* Menu principal */
+
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.botao,
+button {
+    display: inline-block;
+    background-color: #2878b5;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.botao:hover,
+button:hover {
+    background-color: #195b8d;
+}
+
+/* Formulários */
+
+form {
+    background-color: white;
+    padding: 25px;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+form button {
+    margin-top: 20px;
+}
+
+/* Tabelas */
+
+table {
+    width: 95%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-top: 20px;
+}
+
+th,
+td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #263b50;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f4f6;
+}
+
+/* Links */
+
+a {
+    color: #2878b5;
+}
+
+a.botao {
+    color: white;
+}
+
+/* Rodapé */
+
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    color: #666;
+}
+
+/* Ajuste para telas menores */
+
+@media (max-width: 600px) {
+
+    main {
+        margin: 15px;
+        padding: 15px;
+    }
+
+    .menu {
+        flex-direction: column;
+    }
+
+    .botao {
+        text-align: center;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
