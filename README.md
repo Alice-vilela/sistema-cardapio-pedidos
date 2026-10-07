@@ -1,4 +1,4 @@
-
+(```)
 # Sistema de Cardápio e Pedidos para Restaurante
 
 ## Sobre o projeto
@@ -80,3 +80,4 @@ O repositório disponibiliza o código-fonte do projeto. A publicação no GitHu
 ## Finalidade acadêmica
 
 Projeto desenvolvido para aplicação prática dos conteúdos estudados no curso de Análise e Desenvolvimento de Sistemas.
+(```)
