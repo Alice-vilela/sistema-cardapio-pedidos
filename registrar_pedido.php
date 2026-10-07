@@ -4,144 +4,98 @@ require_once "conexao.php";
 
 $mensagem = "";
 
+// Consultar produtos disponíveis
+$sql = "SELECT id_produto, nome, preco
+        FROM produto
+        WHERE disponibilidade = 1
+        ORDER BY nome";
+
+$produtos = $conexao->query($sql);
+
+// Registrar pedido
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $id_produto = $_POST["id_produto"];
-    $quantidade = $_POST["quantidade"];
+    $ids = $_POST["id_produto"] ?? [];
+    $quantidades = $_POST["quantidade"] ?? [];
 
-    // Busca o preço do produto cadastrado
-    $sql_produto = "SELECT preco FROM produto WHERE id_produto = ?";
+    $itens = [];
+    $valor_total = 0;
 
-    $stmt_produto = $conexao->prepare($sql_produto);
-    $stmt_produto->bind_param("i", $id_produto);
-    $stmt_produto->execute();
+    foreach ($ids as $indice => $id_produto) {
 
-    $resultado = $stmt_produto->get_result();
+        $id_produto = (int) $id_produto;
+        $quantidade = (int) ($quantidades[$indice] ?? 0);
 
-    if ($resultado->num_rows > 0) {
+        if ($id_produto <= 0 || $quantidade <= 0) {
+            continue;
+        }
 
-        $produto = $resultado->fetch_assoc();
+        $sql = "SELECT preco FROM produto
+                WHERE id_produto = ?
+                AND disponibilidade = 1";
 
-        $preco_unitario = $produto["preco"];
-        $subtotal = $preco_unitario * $quantidade;
+        $stmt = $conexao->prepare($sql);
+        $stmt->bind_param("i", $id_produto);
+        $stmt->execute();
 
-        // Inicia uma transação
-        $conexao->begin_transaction();
+        $resultado = $stmt->get_result();
+
+        if ($produto = $resultado->fetch_assoc()) {
+
+            $preco_unitario = (float) $produto["preco"];
+            $subtotal = round($preco_unitario * $quantidade, 2);
+
+            $itens[] = [
+                "id_produto" => $id_produto,
+                "quantidade" => $quantidade,
+                "preco_unitario" => $preco_unitario,
+                "subtotal" => $subtotal
+            ];
+
+            $valor_total += $subtotal;
+        }
+
+        $stmt->close();
+    }
+
+    if (count($itens) > 0) {
 
         try {
 
-            // Cadastra o pedido
-            $sql_pedido = "INSERT INTO pedido
-                           (data_hora, status, valor_total)
-                           VALUES (NOW(), 'Pendente', ?)";
+            $conexao->begin_transaction();
 
-            $stmt_pedido = $conexao->prepare($sql_pedido);
-            $stmt_pedido->bind_param("d", $subtotal);
-            $stmt_pedido->execute();
+            $status = "Pendente";
+            $valor_total = round($valor_total, 2);
 
-            // Recupera o ID do pedido criado
+            // Inserir pedido
+            $sql = "INSERT INTO pedido
+                    (data_hora, status, valor_total)
+                    VALUES (NOW(), ?, ?)";
+
+            $stmt = $conexao->prepare($sql);
+            $stmt->bind_param("sd", $status, $valor_total);
+            $stmt->execute();
+
             $id_pedido = $conexao->insert_id;
+            $stmt->close();
 
-            // Cadastra o item do pedido
-            $sql_item = "INSERT INTO item_pedido
-                         (id_pedido, id_produto, quantidade, preco_unitario, subtotal)
-                         VALUES (?, ?, ?, ?, ?)";
+            // Inserir itens do pedido
+            $sql = "INSERT INTO item_pedido
+                    (id_pedido, id_produto, quantidade,
+                     preco_unitario, subtotal)
+                    VALUES (?, ?, ?, ?, ?)";
 
-            $stmt_item = $conexao->prepare($sql_item);
+            $stmt = $conexao->prepare($sql);
 
-            $stmt_item->bind_param(
-                "iiidd",
-                $id_pedido,
-                $id_produto,
-                $quantidade,
-                $preco_unitario,
-                $subtotal
-            );
+            foreach ($itens as $item) {
 
-            $stmt_item->execute();
+                $stmt->bind_param(
+                    "iiidd",
+                    $id_pedido,
+                    $item["id_produto"],
+                    $item["quantidade"],
+                    $item["preco_unitario"],
+                    $item["subtotal"]
+                );
 
-            // Confirma as operações
-            $conexao->commit();
-
-            $mensagem = "Pedido registrado com sucesso! Valor total: R$ "
-                      . number_format($subtotal, 2, ",", ".");
-
-            $stmt_pedido->close();
-            $stmt_item->close();
-
-        } catch (Exception $erro) {
-
-            // Cancela as operações caso ocorra algum erro
-            $conexao->rollback();
-
-            $mensagem = "Erro ao registrar o pedido.";
-        }
-
-    } else {
-
-        $mensagem = "Produto não encontrado.";
-    }
-
-    $stmt_produto->close();
-}
-
-?>
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <title>Registrar Pedido</title>
-
-    <link rel="stylesheet" href="style.css">
-
-</head>
-
-<body>
-
-    <h1>Registrar Pedido</h1>
-
-    <?php if ($mensagem != ""): ?>
-
-        <p><?php echo $mensagem; ?></p>
-
-    <?php endif; ?>
-
-    <form method="POST">
-
-        <label for="id_produto">
-            Código do produto:
-        </label>
-
-        <input
-            type="number"
-            id="id_produto"
-            name="id_produto"
-            min="1"
-            required
-        >
-
-        <label for="quantidade">
-            Quantidade:
-        </label>
-
-        <input
-            type="number"
-            id="quantidade"
-            name="quantidade"
-            min="1"
-            required
-        >
-
-        <button type="submit">
-            Registrar pedido
-        </button>
-
-    </form>
-
-</body>
-
-</html>
+                $stmt->execute();
